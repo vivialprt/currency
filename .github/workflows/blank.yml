@@ -52,3 +52,20 @@ jobs:
         run: |
           echo Add other actions to build,
           python3 -m pip list
+
+  create_artifact:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          path: data/
+
+      # Runs a single command using the runners shell
+      - name: Creates empty file
+        run: touch empty.txt
