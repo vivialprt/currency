@@ -1,0 +1,9 @@
+CRAWLING_PERIOD:
+  minutes: 10
+
+SAVE_INTERVAL:
+  minutes: 1
+
+LOG_LEVEL: 'INFO'
+
+PAIR: 'BTC/USD'
