@@ -1,5 +1,7 @@
 import os
 from datetime import datetime, timedelta
+import logging
+import time
 
 import pandas as pd
 from currencycom.client import Client
@@ -37,19 +39,25 @@ def collect_prices(
     for_: timedelta,
     pair: str = "BTC/USD",
     save_interval: timedelta = timedelta(hours=1),
-    log_level: str = 'ERROR',
+    log_level: str = "ERROR",
 ) -> None:
-
     def save_prices():
-        time_str = save_time.strftime("%y-%m-%d_%H-%M")
+        time_str = save_time.strftime("%d-%m-%y_%H-%M")
         pair_str = "_".join(pair.split("/"))
-        filename = f'data/{pair_str}_{time_str}_prev{save_interval}.csv'
+        filename = f"data/{pair_str}_{time_str}_prev{save_interval}.csv"
         pd.DataFrame.from_records(prices).drop_duplicates().to_csv(filename)
-        print(f"Saved to {filename}")
+        logging.info(f"Saved to {filename}.")
+
+    logging.basicConfig(
+        filename=f'logs/{time.strftime("%d-%m-%y_%H-%M")}-run.log',
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%d-%m-%y %H:%M:%S",
+        level=log_level,
+    )
 
     current_time = save_time = start_time = get_server_time()
     prices = []
-    print(f"Start time: {start_time}")
+    logging.info("Crawling started.")
 
     while not delta_passed(start_time, current_time, for_):
         try:
@@ -63,17 +71,19 @@ def collect_prices(
             )
 
             if delta_passed(save_time, current_time, save_interval):
-                print("delta passed")
+                logging.debug("Delta passed.")
                 save_time = current_time
                 save_prices()
                 prices = []
         except Exception as e:
-            print(e)
+            logging.error(e)
         except KeyboardInterrupt:
+            logging.error("Manual exit.")
             break
 
     save_time = current_time
     save_prices()
+    logging.info("Crawling finished.")
 
 
 def load_prices(data_dir="data"):

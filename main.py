@@ -4,7 +4,7 @@ from utils import collect_prices
 
 
 def main():
-    with open("config.cfg") as f:
+    with open("config.yml") as f:
         cfg = yaml.load(f, yaml.SafeLoader)
 
     period = timedelta(**cfg.get("CRAWLING_PERIOD", {"hours": 4}))
