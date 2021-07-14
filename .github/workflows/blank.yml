@@ -46,3 +46,9 @@ jobs:
       # Runs a single command using the runners shell
       - name: Check python
         run: python3 -V
+
+      # Runs a set of commands using the runners shell
+      - name: Check pip
+        run: |
+          echo Add other actions to build,
+          python3 -m pip list
