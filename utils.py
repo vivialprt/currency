@@ -4,7 +4,8 @@ import logging
 import time
 
 import pandas as pd
-from currencycom.client import Client
+
+import api_calls
 
 
 def minute_passed(
@@ -28,7 +29,7 @@ def time_up(current_timestamp: datetime, finish_time: datetime) -> bool:
 
 
 def get_server_time() -> datetime:
-    return datetimify(Client.get_server_time()["serverTime"])
+    return datetimify(api_calls.get_server_time()["serverTime"])
 
 
 def datetimify(time: str) -> datetime:
@@ -41,6 +42,8 @@ def collect_prices(
     save_interval: timedelta = timedelta(hours=1),
     log_level: str = "ERROR",
 ) -> None:
+
+    # Define method for saving
     def save_prices():
         time_str = save_time.strftime("%d-%m-%y_%H-%M")
         pair_str = "_".join(pair.split("/"))
@@ -48,21 +51,25 @@ def collect_prices(
         pd.DataFrame.from_records(prices).drop_duplicates().to_csv(filename)
         logging.info(f"Saved to {filename}.")
 
+    # Setup logging
     logging.basicConfig(
-        filename=f'logs/{time.strftime("%d-%m-%y_%H-%M")}-run.log',
+        filename=f'logs/{time.strftime("%d-%m-%y_%H-%M")}_run.log',
         format="%(asctime)s [%(levelname)s] %(message)s",
         datefmt="%d-%m-%y %H:%M:%S",
         level=log_level,
     )
 
+    # Initialize some variables
     current_time = save_time = start_time = get_server_time()
     prices = []
     logging.info("Crawling started.")
 
+    # While crawling period has not finished
     while not delta_passed(start_time, current_time, for_):
         try:
+            # Get time and price change
             current_time = get_server_time()
-            price_change = Client.get_24h_price_change(pair)
+            price_change = api_calls.get_24h_price_change(pair)
             prices.append(
                 {
                     "price": float(price_change["lastPrice"]),
@@ -70,6 +77,7 @@ def collect_prices(
                 }
             )
 
+            # If save interval passed, save data
             if delta_passed(save_time, current_time, save_interval):
                 logging.debug("Delta passed.")
                 save_time = current_time
@@ -81,6 +89,7 @@ def collect_prices(
             logging.error("Manual exit.")
             break
 
+    # Also save data before exit
     save_time = current_time
     save_prices()
     logging.info("Crawling finished.")
