@@ -1,8 +1,8 @@
 CRAWLING_PERIOD:
-  minutes: 10
+  hours: 1
 
 SAVE_INTERVAL:
-  minutes: 1
+  hours: 1
 
 LOG_LEVEL: 'INFO'
 
