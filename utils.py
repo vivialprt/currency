@@ -49,6 +49,8 @@ def collect_prices(
         pair_str = "_".join(pair.split("/"))
         savetime_str = "-".join(str(save_interval).split(":")[:2])
         filename = f"data/{pair_str}_{time_str}_prev{savetime_str}.csv"
+        if os.path.exists(filename):
+            filename = filename[:-4] + '2' + filename[-4:]
         pd.DataFrame.from_records(prices).drop_duplicates().to_csv(filename)
         logging.info(f"Saved to {filename}.")
 
