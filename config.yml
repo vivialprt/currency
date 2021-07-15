@@ -1,5 +1,6 @@
 CRAWLING_PERIOD:
   hours: 1
+  minutes: 5
 
 SAVE_INTERVAL:
   hours: 1
