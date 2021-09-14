@@ -1,4 +1,6 @@
 import requests
+import time
+import json
 
 
 API_VERSION = 'v1'
@@ -11,7 +13,11 @@ PRICE_CHANGE_24H_ENDPOINT = BASE_URL + 'ticker/24hr'
 
 def get_server_time():
     r = requests.get(SERVER_TIME_ENDPOINT, timeout=30)
-    return r.json()
+    while True:
+        try:
+            return r.json()
+        except json.JSONDecodeError:  # Exchange on sleep
+            time.sleep(300)
 
 
 def get_24h_price_change(symbol=None):
