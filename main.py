@@ -1,10 +1,17 @@
 from datetime import timedelta
+import sys
 import yaml
 from utils import collect_prices
 
 
 def main():
-    with open("config.yml") as f:
+    if len(sys.argv) > 1:
+        cfg_file = sys.argv[1]
+    else:
+        cfg_file = "config.yml"
+    print(sys.argv)
+    print(cfg_file)
+    with open(cfg_file) as f:
         cfg = yaml.load(f, yaml.SafeLoader)
 
     period = timedelta(**cfg.get("CRAWLING_PERIOD", {"hours": 4}))

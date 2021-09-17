@@ -17,7 +17,7 @@ def get_server_time():
         try:
             return r.json()
         except json.JSONDecodeError:  # Exchange on sleep
-            time.sleep(300)
+            time.sleep(1)
 
 
 def get_24h_price_change(symbol=None):
